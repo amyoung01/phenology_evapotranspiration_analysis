@@ -20,7 +20,8 @@ end_date = phenoflux_metadata.end_date
 transform_dict = {'VPD': 'np.log', \
                   'precip_10day': 'np.sqrt', \
                   'gcc': 'np.log', \
-                  'Gs': 'np.log'}
+                  'Gs': 'np.log', \
+                  'EF': 'np.log'}
 vars_to_use = ['EF','ET','netrad','Gs','VPD','gcc','VPD','gdd','cdd','t_air','precip_10day','SWC']
 
 for i in range(0,len(sites)):

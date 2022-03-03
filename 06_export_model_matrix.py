@@ -78,7 +78,7 @@ for i in range(0,len(sites)):
     mm_std = mm_std.replace(to_replace = np.nan,value = -9999.0)
 
     pd.DataFrame.to_csv(mm_std, \
-                        wdir + '/test/test_linearity/results/flux_data/model_matrices/' + sites[i] + '_model_matrix.csv', \
+                        wdir + '/results/flux_data/model_matrices/' + sites[i] + '_model_matrix.csv', \
                         index = False)
 
 # End of script ---------------------------------------------------------------------

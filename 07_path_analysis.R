@@ -106,7 +106,7 @@ nyr = matrix(NA,nrow=length(sites),ncol=1)
 ##########################################################
 for (i in 1:length(sites)){
 
-  setwd(paste0(wdir,"/test/test_linearity/results/flux_data/model_matrices"))
+  setwd(paste0(wdir,"/results/flux_data/model_matrices"))
   data = read.csv(sprintf("%s_model_matrix.csv",sites[i]))
   data[data == -9999] = NA
 
@@ -119,7 +119,7 @@ for (i in 1:length(sites)){
 
   for (k in 1:length(resp_vars)){
 
-    setwd(paste0(wdir,"/test/test_linearity/results/path_analysis_results/partial_regression_results"))
+    setwd(paste0(wdir,"/results/path_analysis_results/partial_regression_results"))
 
     lm_i = eval(parse(text = sprintf("lm(%s,data=as.data.frame(model_matrix))",mdl_parts[k])))
     mlr_models[[k]] <- lm_i
@@ -190,7 +190,7 @@ rownames(r2) <- sites
 rownames(nyr) <- sites
 colnames(nyr) <- "site_yr"
 
-setwd(paste0(wdir,"/test/test_linearity/results/path_analysis_results"))
+setwd(paste0(wdir,"/results/path_analysis_results"))
 write.csv(params,"sem_param_est.csv",row.names = FALSE)
 write.csv(params_se,"sem_param_se.csv",row.names = FALSE)
 

@@ -6,7 +6,7 @@ require(lavaan) # Latent Variable Analysis (version 0.6-6)
 require(car) # Companion to Applied Regression (version 3.0-10)
 require(lubridate)
 
-wdir <- "/Volumes/GoogleDrive/My Drive/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
 
 setwd(paste0(wdir,"/data/ancillary_data"))
 
@@ -14,11 +14,6 @@ phenoflux_metadata <- read.csv("pheno_flux_sites_to_use.csv")
 
 sites <- phenoflux_metadata$fluxsite
 vegtypes <- phenoflux_metadata$vegtype
-vegtypes[sites == "US-Ro4"] <- "GR"
-vegtypes[sites == "US-Mpj" | sites == "US-Ton"] <- "SA"
-
-transformations = data.frame(var=c("VPD","precip_10day","Gs"),
-                             transformation=c("log","sqrt","log"))
 
 resp_vars <- c("Gs","EF")
 pred_vars <- c("VPD","precip_10day","gcc")

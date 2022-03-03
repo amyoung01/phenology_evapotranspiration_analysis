@@ -4,7 +4,7 @@ graphics.off()
 library(phenocamr)
 library(anytime)
 
-wdir <- "/Volumes/GoogleDrive/My Drive/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
 
 setwd(paste0(wdir,"/data/ancillary_data"))
 phenocam_flux_metadata_table <- read.csv("pheno_flux_sites_to_use.csv")

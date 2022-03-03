@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  7 21:20:00 2021
 
-@author: adam
-"""
-
-import os
+import os, sys
 import numpy as np
 import pandas as pd
 import datetime as dt
 from scipy.interpolate import interp1d
 
-wdir = "/Volumes/GoogleDrive/My Drive/Young_evapotranspiration_phenology_analysis"
+wdir = "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
 
-os.chdir(wdir + '/code/z_functions')
+sys.path.append(wdir + '/code/z_functions')
 from lowess import lowess
 
 os.chdir(wdir + "/data/ancillary_data")

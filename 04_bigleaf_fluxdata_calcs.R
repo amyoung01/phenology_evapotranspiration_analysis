@@ -23,7 +23,7 @@ require(zoo) # S3 Infrastructure for Regular and Irregular Time Series (version 
 require(data.table) # Extension of 'data.frame' (version 1.14.0)
 
 # Set working directory path
-wdir <- "/Volumes/GoogleDrive/My Drive/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
 
 # Load in metadata table with site-specific information
 setwd(paste0(wdir,"/data/ancillary_data"))

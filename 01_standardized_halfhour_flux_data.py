@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  7 09:40:19 2021
-
-@author: ay394
-"""
 
 import os
-
 import pandas as pd
 import numpy as np
 
 # Set Working Directory
-wdir = "/Volumes/GoogleDrive/My Drive/Young_evapotranspiration_phenology_analysis"
+wdir = "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
 
 # Load in metadata for each study site
 os.chdir(wdir + "/data/ancillary_data")

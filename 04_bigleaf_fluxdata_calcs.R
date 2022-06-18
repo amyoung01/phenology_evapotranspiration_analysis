@@ -1,16 +1,8 @@
-# ******************************************************************************
+# ############################################################################
 # Calculate daily summaries of flux data needed for path analysis
-# Author: Adam Young
-# contact: adam.young@nau.edu
-# orcid: 
-# Edited for Publication: 2021-04-10
-# Run using R version 4.0.2 (2020-06-22) on a macOS (Mojave/Big Sur)
-# ****************************************************************************
+# ############################################################################
 
-# ****************************************************************************
-# Initialize Workspace #######################################################
-# ****************************************************************************
-
+# Initialize Workspace 
 rm(list = ls()) # Clear all data from workspace
 graphics.off() # close all current figures and plots
 cat("\14") # clear command console
@@ -23,7 +15,7 @@ require(zoo) # S3 Infrastructure for Regular and Irregular Time Series (version 
 require(data.table) # Extension of 'data.frame' (version 1.14.0)
 
 # Set working directory path
-wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/phenology_evapotranspiration_analysis"
 
 # Load in metadata table with site-specific information
 setwd(paste0(wdir,"/data/ancillary_data"))
@@ -37,9 +29,9 @@ emissivity <- phenoflux_metadata$emissivity # PFT specific emsissivity.
 
 for (i in 1:length(sites)){
   
-  # ****************************************************************************
-  # Load in required datasets for site [i] #####################################
-  # ****************************************************************************
+  # ############################################################################
+  # Load in required datasets for site [i] 
+  # ############################################################################
   
   # Load in half-hour (or hour) flux data
   setwd(paste0(wdir,"/results/flux_data/halfhour"))
@@ -55,9 +47,9 @@ for (i in 1:length(sites)){
   phenodat <- read.csv(sprintf("%s_gcc_time_series.csv",phenos[i]))
   phenodat[phenodat == -9999] <- NA
   
-  # ****************************************************************************
-  # Summarize to daily averages from half-hour #################################
-  # ****************************************************************************
+  # ############################################################################
+  # Summarize to daily averages from half-hour 
+  # ############################################################################
   
   # First, get hour values for each 30 minute (or hour) observation using 
   # lubridate package to identify midday observations.
@@ -92,9 +84,9 @@ for (i in 1:length(sites)){
   nan_id <- as.data.frame(lapply(fluxdat_daily[,2:ncol(fluxdat_daily)],is.nan))
   fluxdat_daily[,2:ncol(fluxdat_daily)][as.matrix(nan_id)] <- NA
   
-  # ****************************************************************************
-  # Precipitation calculations #################################################
-  # ****************************************************************************
+  # ############################################################################
+  # Precipitation calculations 
+  # ############################################################################
   
   # Now calculate cumulative precipitation for 2 and 10 days. 2 days is to
   # remove these observations with recent rainfall events. We use the 10-day
@@ -126,9 +118,9 @@ for (i in 1:length(sites)){
                                                 by = "date",
                                                 all.x = TRUE,all.y = FALSE)
   
-  # ****************************************************************************
-  # Add PhenoCam Gcc data ######################################################
-  # ****************************************************************************
+  # ############################################################################
+  # Add PhenoCam Gcc data 
+  # ############################################################################
   
   phenodat$date <- as.Date(phenodat$date)
   
@@ -137,9 +129,9 @@ for (i in 1:length(sites)){
                                                 by="date",
                                                 all.x=TRUE,all.y=FALSE)
   
-  # ****************************************************************************
-  # Calculate relevant ET statistics using the 'bigleaf' package ###############
-  # ****************************************************************************
+  # ############################################################################
+  # Calculate relevant ET statistics using the 'bigleaf' package 
+  # ############################################################################
   
   # First calculate VPD using RH if it is not available from the downloaded 
   # fluxdata. 
@@ -182,9 +174,9 @@ for (i in 1:length(sites)){
   # Calculate ET using Penman-Monteith
   fluxdat_daily$ET <- bigleaf::LE.to.ET(fluxdat_daily$LE,Tair = fluxdat_daily$t_air)
   
-  # ****************************************************************************
-  # Identify days to remove from analysis ######################################
-  # ****************************************************************************
+  # ############################################################################
+  # Identify days to remove from analysis 
+  # ############################################################################
   # (1) Average midday H or LE < 0 
   # (2) Precip recorded in past 2 days
   # (3) Low VPD values causing very high Gs estimates (e.g., Novick et al. 2016)
@@ -204,12 +196,13 @@ for (i in 1:length(sites)){
   to_remove_bool_all[is.na(to_remove_bool_all)] <- TRUE
   fluxdat_daily$to_remove_id <- as.numeric(to_remove_bool_all)
 
-  # ****************************************************************************
-  # Export data frame to csv file ##############################################
-  # ****************************************************************************
+  # ############################################################################
+  # Export data frame to csv file 
+  # ############################################################################
   
   fluxdat_daily[is.na(fluxdat_daily)] <- -9999 # Replace NA with -9999
   
+  # Write out daily flux data file
   setwd(paste0(wdir,"/results/flux_data/daily"))
   write.csv(fluxdat_daily,
             sprintf("%s_daily_values.csv",sites[i]),

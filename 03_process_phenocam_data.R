@@ -1,31 +1,41 @@
+# Initialize workspace
 rm(list=ls())
 graphics.off()
 
+# Load required libraries
 library(phenocamr)
 library(anytime)
 
-wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
+# Set working directory
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/phenology_evapotranspiration_analysis"
 
+# Load in site info
 setwd(paste0(wdir,"/data/ancillary_data"))
 phenocam_flux_metadata_table <- read.csv("pheno_flux_sites_to_use.csv")
 
+# Get lists of phenocam and fluxsite names
 phenos <- phenocam_flux_metadata_table$phenosite
 vegtype <- phenocam_flux_metadata_table$vegtype
 
+# Different statistics used by PhenoCam for summarizing Gcc. Use whichever
+# statistic minimizes RMSE of time series
 rmse_stats <- c("mean","50","75","90")
 
 for (i in 1:length(phenos)){
     
+    # Load in PhenoCam data for site[i]
     setwd(sprintf('%s//data//raw_data//phenocam//%s',wdir,as.character(phenos[i])))
     pheno_dir <- getwd()
     versions <- files <- list.files()
     
+    # For each version of PhenoCam files for site[i], aggregate together
     for (v in 1:length(versions)){
         
         setwd(sprintf('%s//%s',pheno_dir,versions[v]));
         file_to_read = paste0(sprintf("%s_%s_1day_transition_dates.csv",
                                       phenos[i],versions[v]))
         
+        # Get RMSE statistics
         fid <- file(description = file_to_read,open = "rt")
         header_lines <- readLines(con = fid,n = 15)
         close(fid)
@@ -40,12 +50,12 @@ for (i in 1:length(phenos)){
           
         }
         
+        # Find which statistic minimizes the RMSE
         min_rmse <- which(rmse == min(rmse))
         min_rmse <- ifelse(length(min_rmse) > 1,min_rmse[1],min_rmse)
         
         fn <- sprintf("%s_%s_1day.csv",phenos[i],versions[v])
         
-        # pheno_td <- smooth_ts(fn,out_dir = getwd())
         pheno_td <- read_phenocam(fn)
         
         new_dates_fwd <- transition_dates(pheno_td,
@@ -85,7 +95,7 @@ for (i in 1:length(phenos)){
             
         }
         
-        pheno_ts_v <- pheno_td$data #read.csv(pheno_ts_name,header = TRUE,sep = ",",skip = 24)
+        pheno_ts_v <- pheno_td$data
         
         col_id_1 <- which(colnames(pheno_ts_v) == paste0("gcc_",rmse_stats[min_rmse]))
         col_id_2 <- which(colnames(pheno_ts_v) == paste0("smooth_gcc_",rmse_stats[min_rmse]))
@@ -113,6 +123,7 @@ for (i in 1:length(phenos)){
         
     }
     
+    # Export new csv files for PhenoCam transition dates and Gcc time series
     pheno_ts[is.na(pheno_ts)] <- -9999
     
     pheno_ts_file_to_write <- sprintf("%s_gcc_time_series.csv",phenos[i])

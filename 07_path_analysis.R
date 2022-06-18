@@ -6,7 +6,7 @@ require(lavaan) # Latent Variable Analysis (version 0.6-6)
 require(car) # Companion to Applied Regression (version 3.0-10)
 require(lubridate) # Make Dealing with Dates a Little easier (version 1.7.10)
 
-wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/phenology_evapotranspiration_analysis"
 
 setwd(paste0(wdir,"/data/ancillary_data"))
 
@@ -16,6 +16,7 @@ sites <- phenoflux_metadata$fluxsite
 vegtypes <- phenoflux_metadata$vegtype
 
 ##########################
+# Basic formulation of model with variable names
 mdl_basic =
 '
 VPD~t_air+precip_10day+gcc
@@ -24,6 +25,8 @@ Gs~gcc+VPD+precip_10day
 EF~Gs+VPD
 '
 
+# More complete forumulation with parameter names specified. Needed for 
+# estimating direct, indirect, and total effects.
 mdl_full =
 '
 VPD~a1*t_air+a2*precip_10day+a3*gcc
@@ -50,6 +53,7 @@ pred_vars <- c()
 mdl_parts <- strsplit(mdl_basic,"\n")[[1]]
 mdl_parts <- mdl_parts[2:length(mdl_parts)]
 
+# Get vectors of response and predictor/explanatory variables
 for (m in 1:length(mdl_parts)){
 
   mdl_m = mdl_parts[m]
@@ -77,6 +81,7 @@ for (m in 1:length(mdl_parts)){
 
 col_names <- c("site","response","vegtype",pred_vars)
 
+# Empty arrays to store goodness-of-fit stats
 gof_stats <- matrix(NA,nrow = length(sites),2)
 r2 <- matrix(NA,nrow = length(sites),length(resp_vars))
 
@@ -99,6 +104,7 @@ params_se[,1] <- as.vector(t(matrix(rep(sites,length(resp_vars)),ncol=length(res
 params_se[,2] <- rep(resp_vars,length(sites))
 params_se[,3] <- as.vector(t(matrix(rep(vegtypes,length(resp_vars)),ncol=length(resp_vars),byrow=F)))
 
+# Empty matrix to store direct, indirect, and total effects
 Gs_eff <- matrix(-9999,nrow=length(sites),ncol=9)
 
 nyr = matrix(NA,nrow=length(sites),ncol=1)
@@ -106,17 +112,21 @@ nyr = matrix(NA,nrow=length(sites),ncol=1)
 ##########################################################
 for (i in 1:length(sites)){
 
+  # Load in model matrix for site[i]
   setwd(paste0(wdir,"/results/flux_data/model_matrices"))
   data = read.csv(sprintf("%s_model_matrix.csv",sites[i]))
   data[data == -9999] = NA
 
   model_matrix = data[,unique(c(resp_vars,pred_vars))]
 
+  # Use lavaan package to estimate path analysis parameters
   sem_mdl = lavaan::sem(model = mdl_full,data=model_matrix)
   sem_results = summary(sem_mdl,fit=TRUE,rsquare=TRUE)
 
   mlr_models <- list()
 
+  # Go through each path and get results for partial regressions among all 
+  # path analysis components.
   for (k in 1:length(resp_vars)){
 
     setwd(paste0(wdir,"/results/path_analysis_results/partial_regression_results"))
@@ -149,12 +159,14 @@ for (i in 1:length(sites)){
 
     }
 
+    # Record R^2 values
     r2_id <- which(sem_results$PE$op == "r2" &
                      sem_results$PE$lhs == resp_var_k)
     r2[i,k] <- round(sem_results$PE$est[r2_id],2)
 
   }
 
+  # Record direct, indirect, and total effects
   Gs_eff[i,1] <- sem_results$PE$est[sem_results$PE$label == "de_p10"]
   Gs_eff[i,2] <- sem_results$PE$est[sem_results$PE$label == "ie_p10"]
   Gs_eff[i,3] <- sem_results$PE$est[sem_results$PE$label == "te_p10"]
@@ -167,7 +179,7 @@ for (i in 1:length(sites)){
   Gs_eff[i,8] <- sem_results$PE$est[sem_results$PE$label == "ie_gcc"]
   Gs_eff[i,9] <- sem_results$PE$est[sem_results$PE$label == "te_gcc"]
 
-
+  # Record GOF stats
   gof_stats[i,1] <- sem_results$FIT[9]
   gof_stats[i,2] <- sem_results$FIT[21]
 
@@ -175,6 +187,7 @@ for (i in 1:length(sites)){
 
 }
 
+# Export results from path analysis
 gof_stats <- data.frame(gof_stats)
 r2 <- data.frame(r2)
 params <- data.frame(params)

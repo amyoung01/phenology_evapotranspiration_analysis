@@ -6,36 +6,41 @@ import pandas as pd
 import datetime as dt
 from scipy.interpolate import interp1d
 
-wdir = "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
+wdir = "/Volumes/GoogleDrive/My Drive/W/projects/phenology_evapotranspiration_analysis"
 
+# Import custom lowess smoother function
 sys.path.append(wdir + '/code/z_functions')
 from lowess import lowess
 
-os.chdir(wdir + "/data/ancillary_data")
+os.chdir(os.path.join(wdir,"data/ancillary_data"))
 phenoflux_metadata = pd.read_csv("pheno_flux_sites_to_use.csv")
 
 sites = phenoflux_metadata.fluxsite
 phenos = phenoflux_metadata.phenosite
 vegtypes = phenoflux_metadata.vegtype
 
-db_params = np.array([[12,24],[50,240],[150,500]])         
-en_params = np.array([[5,18],[60,250],[200,400]])         
-gr_params = np.array([[20,30],[50,180],[150,500]])         
-sh_params = db_params
-sa_params = db_params
+# Pre-determined parameters for GDD-CDD for each PFT
+db_params = np.array([[12,24],[50,240],[150,500]]) # DBF        
+en_params = np.array([[5,18],[60,250],[200,400]]) # ENF  
+gr_params = np.array([[20,30],[50,180],[150,500]]) # GRA    
+sh_params = db_params # OSH
+sa_params = db_params # WSA
 
 unique_veg = np.array(['DB','EN','GR','SA','SH'])
 gdd_cdd_params = np.stack((db_params,en_params,gr_params,sa_params,sh_params))
 
 for i in range(0,len(sites)):
     
+    # Find which PFT corresponds to site[i]
     veg_id = unique_veg == vegtypes[i]
     
+    # Load in halfhour fluxdata
     os.chdir(wdir + "/results/flux_data/halfhour")
     fluxdat_hh = pd.read_csv(sites[i] + '.csv',\
                              parse_dates = [0])
     fluxdat_hh = fluxdat_hh.replace(to_replace = -9999.0,value = np.nan)
     
+    # Look at midday temperature data
     hr = fluxdat_hh.datetime_start.dt.hour
     hr_id = (hr >= 10) & (hr < 14) 
     fluxdat_hh = fluxdat_hh.loc[hr_id] 
@@ -45,12 +50,14 @@ for i in range(0,len(sites)):
     dn = t_air_hh.datetime_start.map(dt.datetime.toordinal)
     t_air_hh['dn'] = dn
     
+    # Get midday average temperature data
     t_air_daily = t_air_hh.groupby('dn')['t_air'].mean()
     dates = t_air_daily.index.map(dt.datetime.fromordinal)
     
     t_air_daily = pd.DataFrame({'date':dates,\
                                 't_air':t_air_daily.values})
-        
+    
+    # Calculate GDD and CDD for each year
     gdd_cdd_i = pd.DataFrame()
         
     gdd_cdd_i['date'] = t_air_daily.date

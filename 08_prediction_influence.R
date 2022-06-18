@@ -6,7 +6,7 @@ require(lavaan) # Latent Variable Analysis (version 0.6-6)
 require(car) # Companion to Applied Regression (version 3.0-10)
 require(lubridate)
 
-wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/Young_evapotranspiration_phenology_analysis"
+wdir <- "/Volumes/GoogleDrive/My Drive/W/projects/phenology_evapotranspiration_analysis"
 
 setwd(paste0(wdir,"/data/ancillary_data"))
 
@@ -60,9 +60,6 @@ relChange_gcc = r2[,1]/r2[,4]
 AI = phenoflux_metadata$AI
 PFT = as.factor(phenoflux_metadata$vegtype)
 
-# plot(log(AI),relChange_gcc)
-
-# setwd(paste0(wdir,"/results/path_analysis_results"))
 r2 <- as.data.frame(r2)
 rownames(r2) <- sites
 colnames(r2) <- c("all",pred_vars)

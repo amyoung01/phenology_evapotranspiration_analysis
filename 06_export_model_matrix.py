@@ -65,11 +65,8 @@ for i in range(0,len(sites)):
     fluxdat.loc[fluxdat.gdd < 0,'gdd'] = np.nan
     fluxdat.loc[fluxdat.cdd < 0,'cdd'] = np.nan
 
-    # Remove a single anomalously high value that had very high
-    # influence in regression modeling. Caused by a combination of 
-    # really high LE and really low H, EF was close to 1.0. Given 
-    # it's high influence on our results and our interest in general 
-    # seasonal patterns I decided to remove it from the SEM analysis.
+    # Remove a single anomalously erroneous/outlier value that had very high
+    # influence on our regression modeling.
     if (sites[i] == 'US-Var'):
 
         fluxdat.loc[fluxdat.Gs > 0.1,'to_remove_id'] = 1

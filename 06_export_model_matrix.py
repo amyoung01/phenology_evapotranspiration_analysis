@@ -65,10 +65,11 @@ for i in range(0,len(sites)):
     fluxdat.loc[fluxdat.gdd < 0,'gdd'] = np.nan
     fluxdat.loc[fluxdat.cdd < 0,'cdd'] = np.nan
 
-    # Remove a single anomalously erroneous/outlier value that had very high
-    # influence on our regression modeling.
+    # Remove a single day with anomalously high erroneous/outlier 
+    # Gs value (>0.1 m s-1) at Vaira grassland. Value is approx   
+    # 4000 mmol m-2 s-1 and unreasonably out of characteristic range 
+    # compared to itself and other sites and PFTs.
     if (sites[i] == 'US-Var'):
-
         fluxdat.loc[fluxdat.Gs > 0.1,'to_remove_id'] = 1
 
     model_matrix = np.asarray(fluxdat[vars_to_use])

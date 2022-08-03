@@ -1,0 +1,9 @@
+.DS_Store
+.ipynb_checkpoints
+MERGE_MSG
+z_misc/
+z_code_for_figs/
+z_functions/.DS_Store
+z_functions/__pycache__
+z_functions/extract.m
+z_organize_daymet.py

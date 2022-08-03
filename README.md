@@ -6,6 +6,8 @@
 
 The code provided in this repository was used to conduct the analysis in the following paper:
 
+Young, A. M., Friedl, M. A., Novick, K., Scott, R. L., Moon, M., Frolking, S., et al. (2022). Disentangling the relative drivers of seasonal evapotranspiration across a continental-scale aridity gradient. Journal of Geophysical Research: Biogeosciences, 127, e2022JG006916. https://doi.org/10.1029/2022JG006916
+
 Within this directory you will find the scripts needed to repeat the analysis. The names of the scripts are 
 prefixed by a number indicating the chronological order needed to reproduce the analysis.
 
